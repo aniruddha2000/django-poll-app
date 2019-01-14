@@ -1,0 +1,22 @@
+{% extends 'poll/base.html' %}
+
+{% block title %}Ask Media{% endblock %}
+
+{% block content %}
+
+<h1>{{ latest_question_list.question_text }}</h1>
+
+{% if error_message %}
+<p><strong>{{ error_message }}</strong></p>
+{% endif %}
+
+<form action="{% url 'poll:vote' latest_question_list.id %}" method="post">
+    {% csrf_token %}
+    {% for choice in latest_question_list.choice_set.all %}
+        <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
+        <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label>
+    {% endfor %}
+    <input type="submit" value="Vote">
+</form>
+
+{% endblock %}

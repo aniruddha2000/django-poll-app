@@ -1,0 +1,16 @@
+{% extends 'poll/base.html' %}
+
+{% block title %}Ask Media{% endblock %}
+
+{% block content %}
+
+<h1>{{ question.question_text }}</h1>
+
+<ul>
+{% for choice in question.choice_set.all %}
+    <li><label>{{ choice.choice_text }}</label> -- {{ choice.votes }} vote{{ choice.votes|pluralize }}</li>
+{% endfor %}
+</ul>
+<a href="{% url 'poll:index' %}">Home</a>
+
+{% endblock %}
