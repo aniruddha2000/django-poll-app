@@ -6,17 +6,22 @@ from django.views.generic import ListView, View
 class QuestionList(ListView):
     template_name = 'poll/index.html'
     context_object_name = 'latest_question_list'
-    queryset = Question.objects.filter(
-        pub_date__lte=timezone.now()
-    ).order_by('-pub_date')[:5]
+
+    def show_question_include_choice(self):
+        return Question.objects.exclude(choice__isnull=True)
+
+    def get_queryset(self):
+        return self.show_question_include_choice().filter(
+            pub_date__lte=timezone.now()
+        ).order_by('-pub_date')[:5]
 
 class DetailList(ListView):
     template_name = 'poll/details.html'
-    context_object_name = 'latest_question_list'
+    context_object_name = 'question'
 
-    def get_queryset(self):
+    def get_queryset(self, **kwargs):
         try:
-            question = Question.objects.get(id=self.kwargs.get('question_id'))
+            question = Question.objects.get(id=self.kwargs.get('question_id'), pub_date__lte=timezone.now())
         except Question.DoesNotExist:
             raise Http404("Question does not exist")
         return question
@@ -24,7 +29,7 @@ class DetailList(ListView):
 class VoteView(View):
     template_name = 'poll/details.html'
 
-    def get(self, requests, *args, **kwargs):
+    def get(self, requests):
         context = {}
         return render(requests, 'poll/details.html', context)
 
