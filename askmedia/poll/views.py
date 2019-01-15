@@ -54,7 +54,7 @@ class ResultView(ListView):
 
     def get_queryset(self, **kwargs):
         try:
-            question = Question.objects.get(id=self.kwargs.get('question_id'))
+            question = Question.objects.get(id=self.kwargs.get('question_id'), pub_date__lte=timezone.now())
         except Question.DoesNotExist:
             raise Http404("Result does not exist")
         return question
